@@ -17,6 +17,7 @@ script:
   - cd $HOME; if [[ ! -d cmdstan ]]; then git clone https://github.com/stan-dev/cmdstan.git; fi
   - cd $HOME/cmdstan; git checkout v2.15.0; make stan-update; make build
   - export CMDSTAN_HOME=$HOME/cmdstan
+  - cd $TRAVIS_BUILD_DIR
   - julia -e 'Pkg.clone(pwd()); Pkg.build("StanRun"); Pkg.test("StanRun"; coverage=true)'
 after_success:
   # push coverage results to Coveralls
