@@ -1,4 +1,4 @@
-The StanCall.jl package is licensed under the MIT "Expat" License:
+The StanRun.jl package is licensed under the MIT "Expat" License:
 
 > Copyright (c) 2017: Tamas K. Papp.
 > 
