@@ -8,10 +8,15 @@ julia:
   - nightly
 notifications:
   email: false
+cache:
+  directories:
+  - $HOME/cmdstan
 # uncomment the following lines to override the default test script
-#script:
-#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("StanRun"); Pkg.test("StanRun"; coverage=true)'
+script:
+  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - cd $HOME; git clone https://github.com/stan-dev/cmdstan
+  - cd $HOME/cmdstan; git checkout v2.15.0; make build
+  - julia -e 'Pkg.clone(pwd()); Pkg.build("StanRun"); Pkg.test("StanRun"; coverage=true)'
 after_success:
   # push coverage results to Coveralls
   - julia -e 'cd(Pkg.dir("StanRun")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
