@@ -14,8 +14,9 @@ cache:
 # uncomment the following lines to override the default test script
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - cd $HOME; git clone https://github.com/stan-dev/cmdstan.git
+  - cd $HOME; if [[ ! -d cmdstan ]]; then git clone https://github.com/stan-dev/cmdstan.git; fi
   - cd $HOME/cmdstan; git checkout v2.15.0; make stan-update; make build
+  - export CMDSTAN_HOME=$HOME/cmdstan
   - julia -e 'Pkg.clone(pwd()); Pkg.build("StanRun"); Pkg.test("StanRun"; coverage=true)'
 after_success:
   # push coverage results to Coveralls
