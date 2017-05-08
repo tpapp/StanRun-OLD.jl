@@ -46,7 +46,8 @@ function find_cmdstan_home()
 end
 
 """
-
+A Stan program, represented by its source file. Also contains
+information on the CmdStan home directory.
 """
 struct Program
     cmdstan_home::String
@@ -119,8 +120,8 @@ getparents(::Samples) = (EXECUTABLE, DATA)
     make(sp, part; force = false)
 
 Make `part` of a Stan program, conditional on parent parts being more
-recent. Traverses dependencies recursively, using `mdate`s, or
-unconditionally when `force`.
+recent. Traverses dependencies recursively, using `mtime`s, or
+unconditionally when `force`. Return the `mtime` of the part.
 
 This function implements the traversal algorithm, `_make` does the
 actual work.
