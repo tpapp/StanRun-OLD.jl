@@ -14,7 +14,7 @@ the first executable file with name `name`, or `nothing` if not found.
 NOTE: Testing for executables is heuristic.
 """
 function find_executable_dir(name)
-    for dir in split(ENV["PATH"], @static is_windows() ? ";" : ":")
+    for dir in split(get(ENV, "PATH", ""), @static is_windows() ? ";" : ":")
         if isdir(dir) && name ∈ readdir(dir)
             path = joinpath(dir, name)
             if ((uperm(path) | gperm(path) | operm(path)) & 1) ≠ 0
@@ -41,7 +41,7 @@ function find_cmdstan_home()
         if dir == nothing
             error("stanc not found in path, could not determine CMDSTAN_HOME")
         end
-        joinpath(dir, "..")
+        normpath(joinpath(dir, ".."))
     end
 end
 

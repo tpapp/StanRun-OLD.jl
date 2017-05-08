@@ -4,20 +4,35 @@ using StanDump
 using Base.Test
 
 @testset "cmdstan path" begin
+    ## test finding executables
     if is_linux()
         @test StanRun.find_executable_dir("sh") == "/bin"
     end
     @test withenv(() -> StanRun.find_executable_dir("stanc"), "PATH" => "") == nothing
+    @test withenv(() -> StanRun.find_executable_dir("stanc"), "PATH" => nothing) == nothing
         
-    let dir = "/tmp/test9999"
-        withenv("CMDSTAN_HOME" => dir) do
-            @test StanRun.find_cmdstan_home() == dir
-        end
+    # test finding stanc
+    cmdstan_home = "/tmp/test9999/"
+
+    # when ENV variable CMDSTAN_HOME is given
+    withenv("CMDSTAN_HOME" => cmdstan_home) do
+            @test StanRun.find_cmdstan_home() == cmdstan_home
+    end
+
+    # when it isn't, create a file that looks like it is executable and try to find it
+    dummy_bin = joinpath(cmdstan_home, "bin")
+    dummy_stanc = joinpath(dummy_bin, "stanc")
+    withenv("CMDSTAN_HOME" => nothing, "PATH" => dummy_bin) do
+        mkpath(dummy_bin)
+        touch(dummy_stanc)
+        chmod(dummy_stanc, 0o777)
+        @test StanRun.find_cmdstan_home() == cmdstan_home
+        rm(dummy_bin; recursive = true)
     end
 end
 
 @testset "program paths" begin
-    cmdstan_home = "/tmp/test4444" # fictional path, just to test correctness
+    cmdstan_home = "/tmp/test4444/" # fictional path, just to test correctness
     withenv("CMDSTAN_HOME" => cmdstan_home) do 
         sp = StanRun.Program("/tmp/test99")
         @test StanRun.getpath(sp, StanRun.SOURCE) == "/tmp/test99.stan"
