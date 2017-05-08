@@ -40,8 +40,13 @@ end
         @test StanRun.getpath(sp, StanRun.DIR) == "/tmp"
         @test StanRun.getpath(sp, StanRun.Samples(1)) ==
             "/tmp/test99-samples-1.csv"
-        @test StanRun.getpath(sp, StanRun.SAMPLEBASERX) ==
-            Regex("test99-samples-[[:digit:]]+.csv")
+        let rx = StanRun.getpath(sp, StanRun.SAMPLEBASERX)
+            @test rx == Regex("test99-samples-([[:digit:]]+).csv")
+            @test ismatch(rx, "test99-samples-99.csv")
+            @test !ismatch(rx, "test99-samples-.csv")
+            @test !ismatch(rx, "test99-samples-xx.csv")
+            @test match(rx, "test99-samples-99.csv").captures == ["99"]
+        end
         @test StanRun.getpath(sp, StanRun.STANC) ==
             joinpath(cmdstan_home, "bin/stanc")
         @test StanRun.getpath(sp, StanRun.STANSUMMARY) ==

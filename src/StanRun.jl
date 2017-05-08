@@ -104,7 +104,7 @@ getpath(sp::Program, ::Type{EXECUTABLE}) = sp.program_file
 getpath(sp::Program, samples::Samples) =
     sp.program_file * "-samples-" * string(samples.id) * ".csv"
 getpath(sp::Program, ::Type{SAMPLEBASERX}) =
-    Regex(basename(sp.program_file) * "-samples-[[:digit:]]+.csv")
+    Regex(basename(sp.program_file) * "-samples-([[:digit:]]+).csv")
 
 """
     getparents(part)
