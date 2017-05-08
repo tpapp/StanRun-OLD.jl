@@ -75,6 +75,7 @@ end
         sp = StanRun.Program(joinpath(dir, "nonexistent.stan"))
         @test_throws AssertionError StanRun.make(sp, StanRun.DATA)
         @test_throws AssertionError StanRun.make(sp, StanRun.SOURCE)
+        @test_throws AssertionError StanRun.make(sp, StanRun.EXECUTABLE)
     end
 end
 

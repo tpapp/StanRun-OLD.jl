@@ -131,7 +131,7 @@ function make(sp::Program, part; force = false)
     parent_timestamps = make.(sp, parents; force = force)
     path = getpath(sp, part)
     if isempty(parent_timestamps)
-        @assert isfile(path) 
+        @assert isfile(path) "Could not find $(part) at $(getpath(sp, part))."
     else
         if force || !isfile(path) || (mtime(path) < maximum(parent_timestamps))
             _make(sp, part)
@@ -145,10 +145,6 @@ end
 
 Make `part` of a Stan program. Assumes that parent parts are available.
 """
-function _make(sp::Program, part::Any)
-    error("Could not find $(part) at $(getpath(sp, part)).")
-end
-
 function _make(sp::Program, ::Type{EXECUTABLE})
     executable_path = getpath(sp, EXECUTABLE)
     run(Cmd(`make $(executable_path)`; dir = sp.cmdstan_home))
