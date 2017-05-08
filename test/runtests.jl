@@ -42,3 +42,17 @@ end
     @test StanRun.getparents(StanRun.Samples(1)) ==
         (StanRun.EXECUTABLE, StanRun.DATA)
 end
+
+
+@testset "bernoulli" begin
+    sp = StanRun.Program(Pkg.dir("StanRun", "test", "bernoulli", "bernoulli"))
+    N = 200
+    θ = 0.3
+    y = Int.(rand(N) .< θ)
+    standump(sp, @vardict N y)
+    timestamp = time()
+    StanRun.make(sp, StanRun.Samples(1))
+    samples_path = Pkg.dir("StanRun", "test", "bernoulli",
+                           "bernoulli-samples-1.csv")
+    @test isfile(samples_path) && (mtime(samples_path) ≥ timestamp)
+end
