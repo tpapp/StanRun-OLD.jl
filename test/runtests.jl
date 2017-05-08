@@ -29,6 +29,10 @@ using Base.Test
         @test StanRun.find_cmdstan_home() == cmdstan_home
         rm(dummy_bin; recursive = true)
     end
+
+    withenv("CMDSTAN_HOME" => nothing, "PATH" => nothing) do
+        @test_throws Exception StanRun.find_cmdstan_home()
+    end
 end
 
 @testset "program paths" begin
@@ -68,7 +72,7 @@ end
 
 @testset "make nonexistent" begin
     mktempdir() do dir
-        sp = StanRun.Program(dir)
+        sp = StanRun.Program(joinpath(dir, "nonexistent.stan")
         @test_throws Exception StanRun.make(StanRun.DATA)
         @test_throws Exception StanRun.make(StanRun.SOURCE)
     end
