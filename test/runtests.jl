@@ -72,7 +72,7 @@ end
 
 @testset "make nonexistent" begin
     mktempdir() do dir
-        sp = StanRun.Program(joinpath(dir, "nonexistent.stan")
+        sp = StanRun.Program(joinpath(dir, "nonexistent.stan"))
         @test_throws Exception StanRun.make(StanRun.DATA)
         @test_throws Exception StanRun.make(StanRun.SOURCE)
     end
