@@ -58,6 +58,13 @@ end
         (StanRun.EXECUTABLE, StanRun.DATA)
 end
 
+@testset "make nonexistent" begin
+    mktempdir() do dir
+        sp = StanRun.Program(dir)
+        @test_throws Exception StanRun.make(StanRun.DATA)
+        @test_throws Exception StanRun.make(StanRun.SOURCE)
+    end
+end
 
 @testset "bernoulli" begin
     sp = StanRun.Program(Pkg.dir("StanRun", "test", "bernoulli", "bernoulli"))
