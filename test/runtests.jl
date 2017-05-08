@@ -85,4 +85,6 @@ end
     samples_path = Pkg.dir("StanRun", "test", "bernoulli",
                            "bernoulli-samples-1.csv")
     @test isfile(samples_path) && (mtime(samples_path) ≥ timestamp)
+    StanRun.sample(sp, 2)
+    @test StanRun.sample_ids(sp) == [1, 2]
 end

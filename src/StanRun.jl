@@ -163,5 +163,27 @@ end
 function standump(sp::Program, data...)
     open(io -> standump(io, data...), getpath(sp, DATA), "w+")
 end
-    
+
+"""
+    sample(sp, id; force = false)
+
+Sample samples with `id` from a Stan program `sp`. When `force`,
+regenerate samples.
+"""
+sample(sp::Program, id; force = false) = make(sp, Samples(id); force = force)
+
+"""
+    sample_ids(sp)
+
+Return the samples found associated with Stan program `sp`. Samples
+are not checked to be more recent than either the data or the source,
+use `sample` to enforce that.
+"""
+function sample_ids(sp::Program)
+    dir = getpath(sp, DIR)
+    files = filter(f -> isfile(joinpath(dir, f)), readdir(dir))
+    matches = match.(getpath(sp, SAMPLEBASERX), files)
+    [parse(Int, m.captures[1]) for m in matches if m != nothing]
+end
+
 end # module
