@@ -17,10 +17,18 @@ using Base.Test
 end
 
 @testset "program paths" begin
-    sp = StanRun.Program("/tmp/test99")
-    @test StanRun.getpath(sp, StanRun.SOURCE) == "/tmp/test99.stan"
-    @test StanRun.getpath(sp, StanRun.EXECUTABLE) == "/tmp/test99"
-    @test StanRun.getpath(sp, StanRun.Samples(1)) == "/tmp/test99-samples-1.csv"
+    cmdstan_home = "/tmp/test4444" # fictional path, just to test correctness
+    withenv("CMDSTAN_HOME" => cmdstan_home) do 
+        sp = StanRun.Program("/tmp/test99")
+        @test StanRun.getpath(sp, StanRun.SOURCE) == "/tmp/test99.stan"
+        @test StanRun.getpath(sp, StanRun.EXECUTABLE) == "/tmp/test99"
+        @test StanRun.getpath(sp, StanRun.Samples(1)) ==
+            "/tmp/test99-samples-1.csv"
+        @test StanRun.getpath(sp, StanRun.STANC) ==
+            joinpath(cmdstan_home, "bin/stanc")
+        @test StanRun.getpath(sp, StanRun.STANSUMMARY) ==
+            joinpath(cmdstan_home, "bin/stansummary")
+    end
 end
 
 @testset "parents" begin
