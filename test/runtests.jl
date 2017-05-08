@@ -12,7 +12,7 @@ using Base.Test
     @test withenv(() -> StanRun.find_executable_dir("stanc"), "PATH" => nothing) == nothing
         
     # test finding stanc
-    cmdstan_home = "/tmp/test9999/"
+    cmdstan_home = "/tmp/test9999"
 
     # when ENV variable CMDSTAN_HOME is given
     withenv("CMDSTAN_HOME" => cmdstan_home) do
@@ -32,13 +32,16 @@ using Base.Test
 end
 
 @testset "program paths" begin
-    cmdstan_home = "/tmp/test4444/" # fictional path, just to test correctness
+    cmdstan_home = "/tmp/test4444" # fictional path, just to test correctness
     withenv("CMDSTAN_HOME" => cmdstan_home) do 
         sp = StanRun.Program("/tmp/test99")
         @test StanRun.getpath(sp, StanRun.SOURCE) == "/tmp/test99.stan"
         @test StanRun.getpath(sp, StanRun.EXECUTABLE) == "/tmp/test99"
+        @test StanRun.getpath(sp, StanRun.DIR) == "/tmp"
         @test StanRun.getpath(sp, StanRun.Samples(1)) ==
             "/tmp/test99-samples-1.csv"
+        @test StanRun.getpath(sp, StanRun.SAMPLEBASERX) ==
+            Regex("test99-samples-[[:digit:]]+.csv")
         @test StanRun.getpath(sp, StanRun.STANC) ==
             joinpath(cmdstan_home, "bin/stanc")
         @test StanRun.getpath(sp, StanRun.STANSUMMARY) ==

@@ -41,7 +41,7 @@ function find_cmdstan_home()
         if dir == nothing
             error("stanc not found in path, could not determine CMDSTAN_HOME")
         end
-        normpath(joinpath(dir, ".."))
+        realpath(joinpath(dir, ".."))
     end
 end
 
@@ -59,11 +59,26 @@ struct Program
 end
 
 # constants for various parts
+"The `stanc` executable."
 const STANC = Val{:stanc}
+
+"The `stansummary` executable."
 const STANSUMMARY = Val{:stansummary}
+
+"Stan source code."
 const SOURCE = Val{:source}
+
+"Data file."
 const DATA = Val{:data}
+
+"Compiled executable."
 const EXECUTABLE = Val{:executable}
+
+"Regular expression for sample files (only the filename part)."
+const SAMPLEBASERX = Val{:samplebaserx}
+
+"Directory for all the program-specific files."
+const DIR = Val{:dir}
 
 """
     Samples (MCMC draws). The chain ID is appended to the end.
@@ -82,11 +97,14 @@ getpath(sp::Program, ::Type{STANC}) =
     joinpath(sp.cmdstan_home, "bin/stanc")
 getpath(sp::Program, ::Type{STANSUMMARY}) =
     joinpath(sp.cmdstan_home, "bin/stansummary")
+getpath(sp::Program, ::Type{DIR}) = realpath(dirname(sp.program_file))
 getpath(sp::Program, ::Type{SOURCE}) = sp.program_file * ".stan"
 getpath(sp::Program, ::Type{DATA}) = sp.program_file * ".data.R"
 getpath(sp::Program, ::Type{EXECUTABLE}) = sp.program_file
 getpath(sp::Program, samples::Samples) =
     sp.program_file * "-samples-" * string(samples.id) * ".csv"
+getpath(sp::Program, ::Type{SAMPLEBASERX}) =
+    Regex(basename(sp.program_file) * "-samples-[[:digit:]]+.csv")
 
 """
     getparents(part)
@@ -109,7 +127,7 @@ actual work.
 """
 function make(sp::Program, part; force = false)
     parents = getparents(part)
-    parent_timestamps = make.(sp,parents; force = force)
+    parent_timestamps = make.(sp, parents; force = force)
     path = getpath(sp, part)
     if isempty(parent_timestamps)
         @assert isfile(path) 
