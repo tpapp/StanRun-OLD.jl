@@ -7,12 +7,12 @@ using Base.Test
     if is_linux()
         @test StanRun.find_executable_dir("sh") == "/bin"
     end
-    
+    @test withenv(() -> StanRun.find_executable_dir("stanc"), "PATH" => "") == nothing
+        
     let dir = "/tmp/test9999"
-        orig = ENV["CMDSTAN_HOME"]
-        ENV["CMDSTAN_HOME"] = dir
-        @test StanRun.find_cmdstan_home() == dir
-        ENV["CMDSTAN_HOME"] = orig
+        withenv("CMDSTAN_HOME" => dir) do
+            @test StanRun.find_cmdstan_home() == dir
+        end
     end
 end
 
