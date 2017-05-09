@@ -53,8 +53,12 @@ struct Program
     cmdstan_home::String
     program_file::String
     function Program(program_file; cmdstan_home = find_cmdstan_home())
-        @argcheck isabspath(cmdstan_home)
-        @argcheck isabspath(program_file)
+        @argcheck isabspath(cmdstan_home) "Need an absolute path for CMDSTAN_HOME."
+        @argcheck isabspath(program_file) "Need an absolute path for the program file."
+        ext = splitext(basename(program_file))[2]
+        if !isempty(ext)
+            warn("Program path $(program_file) contains an extension $(ext).")
+        end
         new(cmdstan_home, program_file)
     end
 end

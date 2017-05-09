@@ -58,6 +58,10 @@ end
     end
 end
 
+@testset "program checks" begin
+    @test_warn "contains an extension .stan" StanRun.Program("/tmp/foo.stan")
+end
+
 @testset "parents" begin
     # parts which have to be available
     @test StanRun.getparents(StanRun.SOURCE) == ()
@@ -72,7 +76,7 @@ end
 
 @testset "make nonexistent" begin
     mktempdir() do dir
-        sp = StanRun.Program(joinpath(dir, "nonexistent.stan"))
+        sp = StanRun.Program(joinpath(dir, "nonexistent"))
         @test_throws AssertionError StanRun.make(sp, StanRun.DATA)
         @test_throws AssertionError StanRun.make(sp, StanRun.SOURCE)
         @test_throws AssertionError StanRun.make(sp, StanRun.EXECUTABLE)
