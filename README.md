@@ -6,3 +6,5 @@
 [![codecov.io](http://codecov.io/github/tpapp/StanRun.jl/coverage.svg?branch=master)](http://codecov.io/github/tpapp/StanRun.jl?branch=master)
 
 Julia package for running [CmdStan](http://mc-stan.org/interfaces/cmdstan.html).
+
+**ARCHIVED** This library was archived, and the name reused for a new project.
